@@ -6,7 +6,7 @@ module.exports={
     outputDir: process.env.NODE_ENV === 'production'? 'dist' : 'devdist' ,
 
     //eskint-loader 是否在保存时检查
-    lintOnSave:true,
+    lintOnSave:false,
 
     /*
      * webpack配置，see  https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md  
