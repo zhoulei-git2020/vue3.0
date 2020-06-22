@@ -17,6 +17,11 @@
                 <el-input type="text" v-model="ruleForm.password" autocomplete="off" minlenght="6" maxlength="20"></el-input>
             </el-form-item>
 
+             <el-form-item  prop="passwords" class="item-from" v-show="model === 'register'">
+                <label >重复密码</label>
+                <el-input type="text" v-model="ruleForm.passwords" autocomplete="off" minlenght="6" maxlength="20"></el-input>
+            </el-form-item>
+
             <el-form-item  prop="code" class="item-from">
                 <label >验证码</label>
                <!-- Layout 布局 start-->
@@ -41,13 +46,16 @@
   </div>
 </template>
 
+
 <script>
+import {VaildateScript} from '@/utils/vaildate.js'
 export default {
     name:'login',
    
    //数据
    data(){
     /*表单验证 start*/
+
       //验证用户名邮箱
       var validateUsername = (rule, value, callback) => {
           let reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/; //邮箱正则
@@ -62,7 +70,10 @@ export default {
 
     //验证密码
       var validatePassword = (rule, value, callback) => {
-          let reg = /^(?!\D+$)(?![^a-a-zA-Z]+$)\S{6,20}$/  //密码正则 6至20位数字加字母
+        //过滤后的数据
+        this.ruleForm.password = VaildateScript(value)
+        value = this.ruleForm.password
+        let reg = /^(?!\D+$)(?![^a-a-zA-Z]+$)\S{6,20}$/  //密码正则 6至20位数字加字母
         if (value === '') {
           callback(new Error('请输入密码'));
         } else if (!reg.test(value)) {
@@ -72,9 +83,25 @@ export default {
         }
       };
 
+    //验证重复密码
+      var validatePasswords = (rule, value, callback) => {
+        //过滤后的数据s
+        this.ruleForm.passwords = VaildateScript(value)
+        value = this.ruleForm.passwords
+        if (value === '') {
+          callback(new Error('重复密码不为空'));
+        } else if (value != this.ruleForm.password) {
+          callback(new Error('重复密码与密码不相同'));
+        } else {
+          callback();
+        }
+      };
+
     //验证验证码
      var validateCode = (rule, value, callback) => {
-         let reg = /^[a-z0-9]{6}$/
+        this.ruleForm.password = VaildateScript(value)
+        value = this.ruleForm.password
+         let reg = /^[a-z0-9]{6}$/                      //验证码正则
         if (value === '') {
           return callback(new Error('验证码不能为空'));
         } else if (!reg.test(value)){
@@ -85,18 +112,21 @@ export default {
 
       };
 
-
     /*表单验证数据 end*/
+
         return{
             menuTab:[
-                {txt:'登陆',current:false},
-                {txt:'注册',current:false}
+                {txt:'登陆',current:false,type:'login'},
+                {txt:'注册',current:false,type:'register'}
             ],
+            //模块值
+             model:'login',
 
             /*表单验证 start*/
          ruleForm: {
             username: '',
             password: '',
+            passwords: '',
             code: ''
         },
         rules: {
@@ -108,7 +138,10 @@ export default {
             ],
             code: [
                 { validator: validateCode, trigger: 'blur' }
-            ]
+            ],
+             passwords: [
+                { validator: validatePasswords, trigger: 'blur' }
+            ],
         }
             /*表单验证数据 end*/
         }
@@ -134,21 +167,22 @@ export default {
 
             //选中高光
             data.current = true
+            //修改模块值
+            this.model = data.type
         },
 
+
         /*表单方法 estart*/
-
         submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-
+            this.$refs[formName].validate((valid) => {
+            if (valid) {
+                alert('submit!');
+            } else {
+                console.log('error submit!!');
+                return false;
+            }
+            });
+        },
         /*表单方法 end*/
 
 
