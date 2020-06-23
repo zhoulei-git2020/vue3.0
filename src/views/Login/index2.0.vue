@@ -28,7 +28,7 @@
                     <el-row :gutter="11">
                         <el-col :span="15"><el-input v-model.number="ruleForm.code" minlenght="6" maxlength="6"></el-input></el-col>
                         <el-col :span="9">
-                            <el-button type="success" class="block" @click="getSms()">获取验证码</el-button>
+                            <el-button type="success" class="block">获取验证码</el-button>
                         </el-col>
                     </el-row>
                <!-- Layout 布局 end-->   
@@ -48,29 +48,10 @@
 
 
 <script>
-
-import {GetSms} from '@/api/login.js'
-import {reactive,ref, isRef} from '@vue/composition-api'
 import {VaildateScript} from '@/utils/vaildate.js'
-import axios from 'axios'
 export default {
     name:'login',
-    
-
-    setup(props,context){
-        //Vue3.0放置data数据，生命周期，自定义函数
-        const menuTab = reactive([
-            {txt:'登陆',current:false,type:'login'},
-            {txt:'注册',current:false,type:'register'}
-        ])
-        const model = ref('login')
-        // console.log(model.value)
-        // console.log(isRef(model)?'是一个对象':'不是一个对象')
-    },
-
-
-
-
+   
    //数据
    data(){
     /*表单验证 start*/
@@ -173,7 +154,7 @@ export default {
 
     //挂载完成时
     mounted(){
-       
+
     },
 
     //方法 
@@ -193,29 +174,16 @@ export default {
 
         /*表单方法 estart*/
         submitForm(formName) {
-            // this.$refs[formName].validate((valid) => {
-            // if (valid) {
-            //     alert('submit!');
-            // } else {
-            //     console.log('error submit!!');
-            //     return false;
-            // }
-            // });
-
-         
-
+            this.$refs[formName].validate((valid) => {
+            if (valid) {
+                alert('submit!');
+            } else {
+                console.log('error submit!!');
+                return false;
+            }
+            });
         },
         /*表单方法 end*/
-
-        /*获取验证码接口的操作 start */
-           getSms(){
-             let data = {
-                 username:this.ruleForm.username
-             }
-              GetSms(data) 
-           }
-        /*获取验证码接口的操作 end */
-
 
 
     }

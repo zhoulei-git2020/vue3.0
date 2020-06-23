@@ -4,7 +4,9 @@ import ElementUI from 'element-ui'
 import router from "./router";
 import store from "./store";
 import 'element-ui/lib/theme-chalk/index.css'
+import VuecompositionApi from '@vue/composition-api'
 Vue.use(ElementUI);
+Vue.use(VuecompositionApi)
 Vue.config.productionTip = false;
 
 new Vue({
