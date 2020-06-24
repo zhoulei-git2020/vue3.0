@@ -1,3 +1,4 @@
+import {Message} from 'element-ui';
 /**
  * 拦截器
  */
@@ -24,7 +25,14 @@ service.interceptors.request.use(function(config){
 //添加响应拦截器
 service.interceptors.response.use(function(response){
     //对响应数据做些什么
-    return response;
+    let data = response.data    
+    if(data.resCode !== 0){
+        Message.error(data.message)
+        return Promise.reject(data.message)
+    }else{
+       return response
+    }
+    
 },function(error){
     //对响应错误做些什么
     return Promise.reject(error)

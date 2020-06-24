@@ -36,13 +36,14 @@
 
             <el-form-item>
                 
-                <el-button type="danger" @click="submitForm('ruleForm')" class="login-btn block ">提交</el-button>
+                <el-button type="danger" @click="submitForm('ruleForm')" class="login-btn block"  v-bind:disabled="loginButtonStatus">{{model==='login'?'登陆':'注册'}}</el-button>
      
             </el-form-item>
 
         </el-form>
           <!--  表单 end-->
       </div>
+      
   </div>
 </template>
 
@@ -96,7 +97,7 @@ export default {
         if (value === '') {
           callback(new Error('请输入密码'));
         } else if (!reg.test(value)) {
-          callback(new Error('密码胃6至20位数字+字母'));
+          callback(new Error('密码为6至20位数字+字母'));
         } else {
           callback();
         }
@@ -140,6 +141,11 @@ export default {
             ],
             //模块值
              model:'login',
+
+            //注册登陆按钮提交状态属性
+              loginButtonStatus :  false,
+
+
 
             /*表单验证 start*/
          ruleForm: {
@@ -202,17 +208,27 @@ export default {
             // }
             // });
 
-         
+        
+            
+            
 
         },
         /*表单方法 end*/
 
         /*获取验证码接口的操作 start */
            getSms(){
+            
+           
+
              let data = {
                  username:this.ruleForm.username
              }
-              GetSms(data) 
+              GetSms(data).then((response)=>{
+
+              }).catch(error =>{
+                  console.log(error);
+                  
+              })
            }
         /*获取验证码接口的操作 end */
 
@@ -226,10 +242,14 @@ export default {
     #login {         
         height: 100vh;
        background-color: #344a5f; 
+      
     }
     .login-warp{
         width:330px;
         margin: auto;
+        padding-top: 25vh;
+
+        
     }
     .menu-tab{
        text-align: center; 
@@ -237,13 +257,16 @@ export default {
            display: inline-block;
            width:88px;
            line-height:36px ; 
-           font-size: 14px;
+           font-size: 28px;
            color: #fff;
            border-radius: 2px;
            cursor: pointer; //鼠标移动上面变成手势
+           margin-right: 50px;
        }
        .current{
-           background-color: rgba(0,0,0,.1);
+           background-color:rgba(241, 179, 7, 0.5);
+           border-radius: 5px;
+
        }
     }
     .login-form{
@@ -265,4 +288,7 @@ export default {
             margin-top: 19px;
         }
     }
+
+   
+
 </style>

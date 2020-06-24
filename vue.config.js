@@ -62,7 +62,7 @@ module.exports={
     //webpack-dev-servewr 相关设置
     devServer:{
         open:false, //编译完成后是否打开网页
-        host:'localhost', //指定使用地址,默认127.0.0.0
+        host:'192.168.1.234', //指定使用地址,默认127.0.0.0
         port:8080,//访问端口
         https:false, //编译失败刷新页面
         hot:true,//开启热加载
