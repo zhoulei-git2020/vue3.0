@@ -2,33 +2,33 @@
   <div id="login">
       <div class = "login-warp">
           <ul class="menu-tab">
-              <li :class="{'current':item.current}" v-for="item in menuTab" :key="item.id" @click="togglemneu(item)" >{{item.txt}}</li>
+              <li :class="{'current':item.current}" v-for="item in menuTab" :key="item.id" @click="togglemenu(item)" >{{item.txt}}</li>
           </ul>
           <!--  表单 start-->
-        <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm"  class="login-form" size="medium">
+        <el-form :model="ruleForm" status-icon :rules="rules" ref="loginFrom"  class="login-form" size="medium">
             
             <el-form-item  prop="username" class="item-from">
-                <label >邮箱</label>
-                <el-input type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
+                <label  for="username">邮箱</label>
+                <el-input id="username" type="text"  v-model="ruleForm.username" autocomplete="off"></el-input>
             </el-form-item>
 
             <el-form-item  prop="password" class="item-from">
-                <label >密码</label>
-                <el-input type="text" v-model="ruleForm.password" autocomplete="off" minlenght="6" maxlength="20"></el-input>
+                <label for="password">密码</label>
+                <el-input id="password" type="password" v-model="ruleForm.password" autocomplete="off" minlenght="6" maxlength="20"></el-input>
             </el-form-item>
 
              <el-form-item  prop="passwords" class="item-from" v-show="model === 'register'">
-                <label >重复密码</label>
-                <el-input type="text" v-model="ruleForm.passwords" autocomplete="off" minlenght="6" maxlength="20"></el-input>
+                <label for="passwords">重复密码</label>
+                <el-input id="passwords" type="password" v-model="ruleForm.passwords" autocomplete="off" minlenght="6" maxlength="20"></el-input>
             </el-form-item>
 
             <el-form-item  prop="code" class="item-from">
-                <label >验证码</label>
+                <label for="code">验证码</label>
                <!-- Layout 布局 start-->
                     <el-row :gutter="11">
-                        <el-col :span="15"><el-input v-model.number="ruleForm.code" minlenght="6" maxlength="6"></el-input></el-col>
+                        <el-col :span="15"><el-input id="code" v-model.number="ruleForm.code" minlenght="6" maxlength="6"></el-input></el-col>
                         <el-col :span="9">
-                            <el-button type="success" class="block" @click="getSms()">获取验证码</el-button>
+                            <el-button type="success" class="block" @click="getSms()" :disabled="codeButtonStatus.status">{{codeButtonStatus.text}}</el-button>
                         </el-col>
                     </el-row>
                <!-- Layout 布局 end-->   
@@ -121,7 +121,7 @@ export default {
      var validateCode = (rule, value, callback) => {
         this.ruleForm.password = VaildateScript(value)
         value = this.ruleForm.password
-         let reg = /^[a-z0-9]{6}$/                      //验证码正则
+         let reg = /^[a-z0-9)]{6}$/                      //验证码正则
         if (value === '') {
           return callback(new Error('验证码不能为空'));
         } else if (!reg.test(value)){
@@ -135,17 +135,31 @@ export default {
     /*表单验证数据 end*/
 
         return{
-            menuTab:[
+
+            menuTab:[ //登陆和注册状态信息
                 {txt:'登陆',current:false,type:'login'},
                 {txt:'注册',current:false,type:'register'}
             ],
+            codeButtonStatus:{
+               
+              //获取验证码按钮的状态属性
+              status :false,
+              //获取验证码按钮的状态文字
+              text:'获取验证码',
+            },
+            //获取验证码倒计时
+            timer:null,
+
+
+              //注册登陆按钮提交状态属性
+              loginButtonStatus :  true,
             //模块值
              model:'login',
 
-            //注册登陆按钮提交状态属性
-              loginButtonStatus :  false,
 
+            
 
+           
 
             /*表单验证 start*/
          ruleForm: {
@@ -185,7 +199,7 @@ export default {
     //方法 
     methods:{
         //遍历去除高光
-        togglemneu(data){
+        togglemenu(data){
             this.menuTab.forEach(elem=>{
                 elem.current = false
             })
@@ -194,6 +208,11 @@ export default {
             data.current = true
             //修改模块值
             this.model = data.type
+
+            //注册登陆切换时重置表单
+            //两种写法任选其一
+            //this.$refs.loginFrom.resetFields();  
+            this.$refs['loginFrom'].resetFields();
         },
 
 
@@ -221,16 +240,62 @@ export default {
            
 
              let data = {
-                 username:this.ruleForm.username
+                 username:this.ruleForm.username, //发送当前用户名
+                 module:this.model                //发送当前的状态(登陆还是注册)
              }
-              GetSms(data).then((response)=>{
 
+            this.codeButtonStatus.status =true //点击发送验证码按钮后修改获取验证码状态为不可用
+            this.codeButtonStatus.text = "发送中" ////点击发送验证码按钮后修改获取验证码文字
+
+
+            setTimeout(()=>{
+              
+                GetSms(data).then((response)=>{
+                  console.log(response.data);  //获取到服务器成功的消息并弹窗
+                  this.$message({ //正确的小时提示
+                    showClose:true,
+                    message:response.data.message,
+                    type:'success'
+                  })
+                  this.loginButtonStatus = false  //启用登陆或注册按钮
+                  //请求成功调用定时器，启用倒计时
+                 this.countDown(60)
               }).catch(error =>{
-                  console.log(error);
-                  
+                 console.log(error) //获取服务器失败的消息并弹窗           
               })
+
+
+            },2000)
+
+           },
+
+          /**
+           * 获取验证码按钮点击后的倒计时操作
+           */
+           countDown(number){
+            //setTime只执行一次
+            //setInterval 不断执行,需要条件才停止
+          let count = number      
+           this.timer =  setInterval(()=>{
+            count--
+            console.log(count);
+            
+            if(count === 0){
+             clearInterval(count)
+            }
+            this.codeButtonStatus.text = `倒计时${count}`;
+            },1000)
+
+
            }
+
+
+
         /*获取验证码接口的操作 end */
+
+
+
+
 
 
 

@@ -7,7 +7,7 @@ import axios from 'axios'
 const BASEURL = process.env.NODE_ENV === 'production'? '' : '/devapi';
 const service = axios.create({
     baseURL:BASEURL, //请求地址
-    timeout:1000,                           //请求超时时间
+    timeout:10000,     //请求超时时间
 });
 
 
