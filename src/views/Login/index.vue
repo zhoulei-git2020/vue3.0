@@ -157,6 +157,32 @@ export default {
              model:'login',
 
 
+            /**
+           * 获取验证码按钮点击后的倒计时操作
+           */
+            //setTime只执行一次
+            //setInterval 不断执行,需要条件才停止
+            countDown: ((number)=>{
+              let time = number
+               console.log(time)
+               this.timer = setInterval(()=>{
+                time --
+                console.log()
+                if(time === 0){ //60秒倒计时结束后清空定时器，
+                  clearInterval(this.timer)
+                   this.codeButtonStatus.text = '再次获取' //更改按钮文字
+                   this.codeButtonStatus.status = false    //更改按钮状态
+                }else{
+                  this.codeButtonStatus.text = `发送中${time}`  //点击之后进入60秒倒计时
+                }
+                
+                },1000)
+            }) ,    
+            
+
+
+
+
             
 
            
@@ -258,8 +284,7 @@ export default {
                     type:'success'
                   })
                   this.loginButtonStatus = false  //启用登陆或注册按钮
-                  //请求成功调用定时器，启用倒计时
-                 this.countDown(60)
+                   this.countDown(60)//请求成功调用定时器，启用倒计时
               }).catch(error =>{
                  console.log(error) //获取服务器失败的消息并弹窗           
               })
@@ -269,26 +294,10 @@ export default {
 
            },
 
-          /**
-           * 获取验证码按钮点击后的倒计时操作
-           */
-           countDown(number){
-            //setTime只执行一次
-            //setInterval 不断执行,需要条件才停止
-          let count = number      
-           this.timer =  setInterval(()=>{
-            count--
-            console.log(count);
-            
-            if(count === 0){
-             clearInterval(count)
-            }
-            this.codeButtonStatus.text = `倒计时${count}`;
-            },1000)
+         
 
 
-           }
-
+         
 
 
         /*获取验证码接口的操作 end */
