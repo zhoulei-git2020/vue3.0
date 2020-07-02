@@ -26,7 +26,7 @@
                 <label for="code">验证码</label>
                <!-- Layout 布局 start-->
                     <el-row :gutter="11">
-                        <el-col :span="15"><el-input id="code" v-model.number="ruleForm.code" minlenght="6" maxlength="6"></el-input></el-col>
+                        <el-col :span="15"><el-input id="code" v-model="ruleForm.code" minlenght="6" maxlength="6"></el-input></el-col>
                         <el-col :span="9">
                             <el-button type="success" class="block" @click="getSms()" :disabled="codeButtonStatus.status">{{codeButtonStatus.text}}</el-button>
                         </el-col>
@@ -50,7 +50,7 @@
 
 <script>
 
-import {GetSms} from '@/api/login.js'
+import {GetSms, Register } from '@/api/login.js'
 import {reactive,ref, isRef} from '@vue/composition-api'
 import {VaildateScript} from '@/utils/vaildate.js'
 import axios from 'axios'
@@ -119,9 +119,9 @@ export default {
 
     //验证验证码
      var validateCode = (rule, value, callback) => {
-        this.ruleForm.password = VaildateScript(value)
-        value = this.ruleForm.password
-         let reg = /^[a-z0-9)]{6}$/                      //验证码正则
+        this.ruleForm.code = VaildateScript(value)
+        value = this.ruleForm.code
+         let reg =/^[a-z0-9]{6}$/                      //验证码正则
         if (value === '') {
           return callback(new Error('验证码不能为空'));
         } else if (!reg.test(value)){
@@ -151,8 +151,8 @@ export default {
             timer:null,
 
 
-              //注册登陆按钮提交状态属性
-              loginButtonStatus :  true,
+            //注册登陆按钮提交状态属性
+              loginButtonStatus :  false,
             //模块值
              model:'login',
 
@@ -179,13 +179,6 @@ export default {
                 },1000)
             }) ,    
             
-
-
-
-
-            
-
-           
 
             /*表单验证 start*/
          ruleForm: {
@@ -242,29 +235,54 @@ export default {
         },
 
 
-        /*表单方法 estart*/
-        submitForm(formName) {
-            // this.$refs[formName].validate((valid) => {
-            // if (valid) {
-            //     alert('submit!');
-            // } else {
-            //     console.log('error submit!!');
-            //     return false;
-            // }
-            // });
+        /*提交表单方法 estart*/
+        submitForm(loginFrom) {
+         
+         //登陆功能start
+
+
+         return false
+         //登陆功能end
+
+
+           
+
+
+            this.$refs['loginFrom'].validate((valid) => {
+            if (valid) {
+                let requestData = { //获取表单的数据
+                  username:this.ruleForm.username,  //表单用户名
+                  password:this.ruleForm.password,  //表单密码
+                  code:this.ruleForm.code,          //表单验证码
+                  module:'register'                 //module
+                }
+               
+                Register(requestData).then(response =>{
+                   let data = response.data  //获取返回值的data
+                   this.$message({ //正确的小时提示
+                    showClose:true,
+                    message:response.data.message,
+                    type:'success'
+                  }) 
+
+                }).catch(error=>{
+
+                })
+            } else {
+                console.log('error submit!!');
+                return false;
+            }
+            });
 
         
             
             
 
         },
-        /*表单方法 end*/
+        /*提交表单方法 end*/
 
         /*获取验证码接口的操作 start */
            getSms(){
-            
-           
-
              let data = {
                  username:this.ruleForm.username, //发送当前用户名
                  module:this.model                //发送当前的状态(登陆还是注册)
@@ -274,7 +292,7 @@ export default {
             this.codeButtonStatus.text = "发送中" ////点击发送验证码按钮后修改获取验证码文字
 
 
-            setTimeout(()=>{
+            
               
                 GetSms(data).then((response)=>{
                   console.log(response.data);  //获取到服务器成功的消息并弹窗
@@ -284,13 +302,10 @@ export default {
                     type:'success'
                   })
                   this.loginButtonStatus = false  //启用登陆或注册按钮
-                   this.countDown(60)//请求成功调用定时器，启用倒计时
+                  this.countDown(60)//请求成功调用定时器，启用倒计时
               }).catch(error =>{
                  console.log(error) //获取服务器失败的消息并弹窗           
               })
-
-
-            },2000)
 
            },
 
