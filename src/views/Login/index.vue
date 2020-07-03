@@ -157,12 +157,18 @@ export default {
              model:'login',
 
 
-            /**
-           * 获取验证码按钮点击后的倒计时操作
+          /**
+           * 获取验证码按钮点击后的倒计时操作 start
            */
             //setTime只执行一次
             //setInterval 不断执行,需要条件才停止
             countDown: ((number)=>{
+               
+               //判断定时器是否存在，如果存在就清除
+               if(this.timer){
+                  clearInterval(this.timer)
+                }
+
               let time = number
                console.log(time)
                this.timer = setInterval(()=>{
@@ -178,7 +184,27 @@ export default {
                 
                 },1000)
             }) ,    
-            
+          /**
+           * 获取验证码按钮点击后的倒计时操作 end
+           */
+
+          /**
+           * 点击获取验证码按钮后切换登陆注册状态后倒计时清零 start
+           **/  
+
+             clearCountDown : (()=>{ 
+               //还原验证码按钮默认状态 
+                this.codeButtonStatus.status = false
+                this.codeButtonStatus.text = '获取验证码'
+
+                //清除倒计时
+                clearInterval(this.timer)
+            }), 
+
+          /**
+           * 点击获取验证码按钮后切换登陆注册状态后倒计时清零 end
+           **/  
+
 
             /*表单验证 start*/
          ruleForm: {
@@ -239,7 +265,8 @@ export default {
         submitForm(loginFrom) {
          
          //登陆功能start
-
+          this.togglemenu(this.menuTab[0]) //点击注册按钮后清空输入框所有文字
+          this.clearCountDown() //回复验证码按钮初始状态
 
          return false
          //登陆功能end
