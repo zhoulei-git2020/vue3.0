@@ -50,14 +50,13 @@
 
 <script>
 
-import {GetSms, Register } from '@/api/login.js'
+import {GetSms, Register,Login } from '@/api/login.js'
 import {reactive,ref, isRef} from '@vue/composition-api'
 import {VaildateScript} from '@/utils/vaildate.js'
 import axios from 'axios'
 export default {
     name:'login',
     
-
     setup(props,context){
         //Vue3.0放置data数据，生命周期，自定义函数
         const menuTab = reactive([
@@ -173,12 +172,14 @@ export default {
                console.log(time)
                this.timer = setInterval(()=>{
                 time --
-                console.log()
+                console.log(time)
                 if(time === 0){ //60秒倒计时结束后清空定时器，
                   clearInterval(this.timer)
+                  this.codeButtonStatus.status = false    //更改按钮状态
                    this.codeButtonStatus.text = '再次获取' //更改按钮文字
-                   this.codeButtonStatus.status = false    //更改按钮状态
+                   
                 }else{
+                   
                   this.codeButtonStatus.text = `发送中${time}`  //点击之后进入60秒倒计时
                 }
                 
@@ -264,40 +265,36 @@ export default {
         /*提交表单方法 estart*/
         submitForm(loginFrom) {
          
-         //登陆功能start
-          this.togglemenu(this.menuTab[0]) //点击注册按钮后清空输入框所有文字
-          this.clearCountDown() //回复验证码按钮初始状态
+         
 
-         return false
+         //登陆功能start
+         
+
+         
          //登陆功能end
 
 
            
 
 
-            this.$refs['loginFrom'].validate((valid) => {
+            this.$refs['loginFrom'].validate((valid) => { //表单验证通过
             if (valid) {
-                let requestData = { //获取表单的数据
-                  username:this.ruleForm.username,  //表单用户名
-                  password:this.ruleForm.password,  //表单密码
-                  code:this.ruleForm.code,          //表单验证码
-                  module:'register'                 //module
-                }
-               
-                Register(requestData).then(response =>{
-                   let data = response.data  //获取返回值的data
-                   this.$message({ //正确的小时提示
-                    showClose:true,
-                    message:response.data.message,
-                    type:'success'
-                  }) 
+              
+              
+               if(this.model === 'login'){
+                   this.login()
+               }else {
+                   this.register()
+              }
 
-                }).catch(error=>{
-
-                })
             } else {
                 console.log('error submit!!');
-                return false;
+               
+               //跳转路由函数
+                this.$router.push({  
+                  name:'Console'  //路由名称
+                })
+                 
             }
             });
 
@@ -336,19 +333,55 @@ export default {
 
            },
 
-         
-
-
-         
-
-
         /*获取验证码接口的操作 end */
 
 
+        /**
+         *  登陆函数
+         */
+          login(){
+
+              let requestData ={
+                  username:this.ruleForm.username,  //表单用户名
+                  password:this.ruleForm.password,  //表单密码
+                  code:this.ruleForm.code,          //表单验证码
+              }
+
+            Login(requestData).then(response =>{
+                console.log('登陆结果'); 
+                console.log(response);
+                
+            }).catch(error=>{
+
+            })
+          },
 
 
 
+        /**
+         *  注册函数
+         */
+        register(){
+                let requestData = { //获取表单的数据
+                  username:this.ruleForm.username,  //表单用户名
+                  password:this.ruleForm.password,  //表单密码
+                  code:this.ruleForm.code,          //表单验证码
+                  module:'register'                 //module
+                }
+               
+                Register(requestData).then(response =>{
+                   let data = response.data  //获取返回值的data
+                   this.$message({ //正确时提示
+                    showClose:true,
+                    message:response.data.message,
+                    type:'success'
+                  }) 
+                   this.togglemenu(this.menuTab[0]) //点击注册按钮后清空输入框所有文字
+                  this.clearCountDown() //回复验证码按钮初始状态
+                }).catch(error=>{
 
+                })
+        }
 
     }
 }
