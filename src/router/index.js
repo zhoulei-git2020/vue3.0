@@ -25,7 +25,16 @@ const routes = [
   {
     path: "/console",
     name: "Console",
-    component: ()=>import("../views/Layout/index.vue")
+    redirect: "index",
+    component: ()=>import("../views/Layout/index.vue"),
+    children:[
+      {
+        path: "/console",
+        name: "Console",
+        component: ()=>import("../views/Console/index.vue"),
+      }
+    ]
+
   },  
 ];
 

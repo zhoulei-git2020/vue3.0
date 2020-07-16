@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="layout">
         <LayoutHeader/>
         <LayoutMain/>
         <LayoutNav/>
@@ -49,5 +49,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+    #layout{
+       background-color: #fff; 
+    }
 </style>
