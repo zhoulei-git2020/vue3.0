@@ -1,46 +1,73 @@
 <template>
     <div id="nav-wrap">
-        <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-        <el-submenu index="1">
-            <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="title">导航一</span>
+        <el-menu
+        default-active="1-4-1" 
+        class="el-menu-vertical-demo" 
+        @open="handleOpen" 
+        @close="handleClose" 
+        :collapse="isCollapse" 
+        background-color='transparent' 
+        text-color='#fff' 
+        active-text-color="#fff"
+        router>
+            <template v-for="(item,index) in routers">
+                <el-submenu v-if="!item.hidden" :key="item.id" :index="index">
+                    <!-- 一级菜单 -->
+                    <template slot="title">
+                    <i class="el-icon-location"></i>
+                    <span slot="title">{{item.meta.name}}</span>
+                    </template>
+                    <!-- 子菜单 -->
+                    <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="subItem.path">{{subItem.meta.name}}</el-menu-item>
+                </el-submenu>
             </template>
-            <el-menu-item-group>
-            <span slot="title">分组一</span>
-            <el-menu-item index="1-1">选项1</el-menu-item>
-            <el-menu-item index="1-2">选项2</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="分组2">
-            <el-menu-item index="1-3">选项3</el-menu-item>
-            </el-menu-item-group>
-            <el-submenu index="1-4">
-            <span slot="title">选项4</span>
-            <el-menu-item index="1-4-1">选项1</el-menu-item>
-            </el-submenu>
-        </el-submenu>
-        <el-menu-item index="2">
-            <i class="el-icon-menu"></i>
-            <span slot="title">导航二</span>
-        </el-menu-item>
-        <el-menu-item index="3" disabled>
-            <i class="el-icon-document"></i>
-            <span slot="title">导航三</span>
-        </el-menu-item>
-        <el-menu-item index="4">
-            <i class="el-icon-setting"></i>
-            <span slot="title">导航四</span>
-        </el-menu-item>
         </el-menu>
-</div>
+    </div>
 </template>
-
 <script>
-
-
-
+import {reactive,ref, isRef,toRefs,onMounted} from '@vue/composition-api'
 export default {
+    name:'navMenu',
     
+     //组件注册区
+    components:{
+      
+    },
+
+        //数据区
+     data(){
+         return{
+            isCollapse: false,
+            routers:reactive(this.$router.options.routes) //路由信息对象数组
+         }
+     },
+
+
+    //创建完成时
+    created(){
+
+    },
+
+    //挂载完成时
+    mounted(){
+      
+       
+    },
+
+    //方法
+    methods:{
+    
+        handleOpen(key, keyPath) {
+        console.log(key, keyPath);
+      },
+      handleClose(key, keyPath) {
+        console.log(key, keyPath);
+      }
+
+    }
+
+
+
 }
 </script>
 

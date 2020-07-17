@@ -1,5 +1,5 @@
 <template>
-    <div>sdsdsd</div>
+    <div>控制台首页</div>
 </template>
 
 <script>
