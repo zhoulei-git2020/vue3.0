@@ -11,10 +11,10 @@
         active-text-color="#fff"
         router>
             <template v-for="(item,index) in routers">
-                <el-submenu v-if="!item.hidden" :key="item.id" :index="index">
+                <el-submenu v-if="!item.hidden" :key="item.id" :index="index+''">
                     <!-- 一级菜单 -->
                     <template slot="title">
-                    <i class="el-icon-location"></i>
+                    <i :class="item.meta.icon"></i>
                     <span slot="title">{{item.meta.name}}</span>
                     </template>
                     <!-- 子菜单 -->
